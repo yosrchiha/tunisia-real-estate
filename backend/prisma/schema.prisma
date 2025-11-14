@@ -1,0 +1,186 @@
+// This tells Prisma what database you're using
+
+// backend/prisma/schema.prisma
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:azerty@localhost:3306/tunisia_real_estate"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============================================
+// USER MANAGEMENT TABLES
+// ============================================
+
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  roles        UserRole[]
+  properties   Property[]
+  bookings     Booking[]
+  reviews      Review[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model UserRole {
+  userId     String
+  roleId     String
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  assignedAt   DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// ============================================
+// PROPERTY TABLES
+// ============================================
+
+model Property {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  price       Decimal  @db.Decimal(10, 3)
+  size        Int?
+  bedrooms    Int?
+  bathrooms   Int?
+  
+  address     String
+  city        String
+  latitude    Decimal? @db.Decimal(10, 8)
+  longitude   Decimal? @db.Decimal(11, 8)
+  
+  propertyType String
+  listingType  String
+  status      String   @default("active")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  images      Image[]
+  bookings    Booking[]
+  reviews     Review[]
+  documents   Document[]
+
+  @@index([city])
+  @@index([propertyType])
+  @@index([listingType])
+}
+
+model Image {
+  id         String   @id @default(uuid())
+  url        String
+  publicId   String
+  caption    String?
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// BOOKING & TRANSACTION TABLES
+// ============================================
+
+model Booking {
+  id            String   @id @default(uuid())
+  startDate     DateTime
+  endDate       DateTime?
+  totalAmount   Decimal  @db.Decimal(10, 3)
+  paymentStatus String   @default("pending")
+  stripePaymentIntentId String?
+  status        String   @default("pending")
+  message       String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  propertyId    String
+  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([propertyId])
+}
+
+// ============================================
+// REVIEW & RATING TABLES
+// ============================================
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+}
+
+// ============================================
+// DOCUMENT TABLES
+// ============================================
+
+model Document {
+  id          String   @id @default(uuid())
+  title       String
+  type        String
+  url         String
+  publicId    String
+  uploadedAt  DateTime @default(now())
+
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
