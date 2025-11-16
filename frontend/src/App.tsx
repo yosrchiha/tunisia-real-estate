@@ -13,12 +13,8 @@ import Profile from './pages/Profile';
 import Homeowner from './pages/dashboard/homeowner';
 import AddPropertyForm from './pages/dashboard/AddPropertyForm';
 import RenterDashboard from './pages/dashboard/renter';
-<<<<<<< HEAD
 import buyerDashboard from './pages/dashboard/buyer';
 import BuyerDashboard from './pages/dashboard/buyer';
-=======
-
->>>>>>> 28379027caa48cc70babba826c44dec6fd8c25f1
 function App() {
   return (
     <ErrorBoundary>
@@ -59,7 +55,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-<<<<<<< HEAD
               {/* Dashboard → Renter */}
             <Route
               path="/dashboard/buyer"
@@ -69,8 +64,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-=======
->>>>>>> 28379027caa48cc70babba826c44dec6fd8c25f1
 
             {/* Dashboard → Homeowner */}
             <Route

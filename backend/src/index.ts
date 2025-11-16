@@ -16,20 +16,14 @@ const prisma = new PrismaClient();
 
 app.use('*', cors({
   origin: [
-<<<<<<< HEAD
     
-=======
->>>>>>> 28379027caa48cc70babba826c44dec6fd8c25f1
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:3000',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
-<<<<<<< HEAD
     'http://localhost:5174',
     'http://localhost:5175'
-=======
->>>>>>> 28379027caa48cc70babba826c44dec6fd8c25f1
   ],
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -110,11 +104,7 @@ process.on('SIGTERM', async () => {
 // START SERVER
 // ============================================
 
-<<<<<<< HEAD
 const port = parseInt(process.env.PORT || '3000');
-=======
-const port = parseInt(process.env.PORT || '5000');
->>>>>>> 28379027caa48cc70babba826c44dec6fd8c25f1
 console.log(`🚀 Server starting on http://localhost:${port}`);
 
 export { app };
